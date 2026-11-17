@@ -5,25 +5,44 @@
 
 @section('content')
 
-<div class="mx-auto max-w-7xl space-y-6">
+<div id="print-area" class="mx-auto max-w-7xl space-y-6">
 
     <!-- HEADER -->
     <div>
-        <h1 class="text-2xl font-bold text-slate-800">
-            Laporan Kinerja Karyawan
-        </h1>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <p class="mt-2 text-sm text-slate-500">
-            Pantau dan evaluasi hasil penilaian kinerja seluruh karyawan.
-        </p>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">
+                    Laporan Kinerja Karyawan
+                </h1>
+
+                <p class="mt-2 text-sm text-slate-500">
+                    Pantau dan evaluasi hasil penilaian kinerja seluruh karyawan.
+                </p>
+            </div>
+
+            <!-- TOMBOL CETAK -->
+            <button type="button"
+                onclick="printReport()"
+                class="no-print inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+
+                <i class="fa-solid fa-print mr-2"></i>
+                Cetak Laporan
+
+            </button>
+
+        </div>
     </div>
+
 
     <!-- STATISTIK -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
         <!-- TOTAL PENILAIAN -->
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div class="flex items-center justify-between">
+
                 <div>
                     <p class="text-sm font-medium text-slate-500">
                         Total Penilaian
@@ -37,12 +56,17 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <i class="fa-solid fa-clipboard-list text-xl"></i>
                 </div>
+
             </div>
+
         </div>
+
 
         <!-- RATA-RATA -->
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div class="flex items-center justify-between">
+
                 <div>
                     <p class="text-sm font-medium text-slate-500">
                         Rata-rata Nilai
@@ -56,12 +80,17 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                     <i class="fa-solid fa-chart-line text-xl"></i>
                 </div>
+
             </div>
+
         </div>
+
 
         <!-- SANGAT BAIK -->
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div class="flex items-center justify-between">
+
                 <div>
                     <p class="text-sm font-medium text-slate-500">
                         Sangat Baik
@@ -75,12 +104,17 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                     <i class="fa-solid fa-award text-xl"></i>
                 </div>
+
             </div>
+
         </div>
+
 
         <!-- PERLU EVALUASI -->
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div class="flex items-center justify-between">
+
                 <div>
                     <p class="text-sm font-medium text-slate-500">
                         Perlu Evaluasi
@@ -94,10 +128,13 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">
                     <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                 </div>
+
             </div>
+
         </div>
 
     </div>
+
 
     <!-- RINGKASAN PREDIKAT -->
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -156,6 +193,7 @@
 
     </div>
 
+
     <!-- DATA LAPORAN -->
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
@@ -172,8 +210,10 @@
                 </p>
             </div>
 
+
+            <!-- FILTER -->
             <form action="{{ route('reports.index') }}" method="GET"
-                class="flex flex-wrap items-center gap-2">
+                class="no-print flex flex-wrap items-center gap-2">
 
                 <input
                     type="month"
@@ -183,20 +223,45 @@
 
                 <button type="submit"
                     class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+
                     <i class="fa-solid fa-filter mr-1"></i>
                     Filter
+
                 </button>
 
                 @if ($month)
+
                     <a href="{{ route('reports.index') }}"
                         class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+
                         Reset
+
                     </a>
+
                 @endif
 
             </form>
 
         </div>
+
+
+        <!-- INFORMASI PERIODE CETAK -->
+        <div class="hidden print-period px-6 pt-5">
+
+            <p class="text-sm text-slate-600">
+                Periode Laporan:
+                <strong>
+                    {{ $month ? \Carbon\Carbon::createFromFormat('Y-m', $month)->translatedFormat('F Y') : 'Semua Periode' }}
+                </strong>
+            </p>
+
+            <p class="mt-1 text-xs text-slate-500">
+                Dicetak pada:
+                {{ now()->translatedFormat('d F Y, H:i') }}
+            </p>
+
+        </div>
+
 
         <!-- TABEL -->
         <div class="overflow-x-auto">
@@ -204,6 +269,7 @@
             <table class="w-full text-left text-sm">
 
                 <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+
                     <tr>
                         <th class="whitespace-nowrap px-6 py-4">No</th>
                         <th class="whitespace-nowrap px-6 py-4">Karyawan</th>
@@ -211,15 +277,18 @@
                         <th class="whitespace-nowrap px-6 py-4">Nilai Akhir</th>
                         <th class="whitespace-nowrap px-6 py-4">Predikat</th>
                         <th class="whitespace-nowrap px-6 py-4">Tanggal Penilaian</th>
-                        <th class="whitespace-nowrap px-6 py-4 text-center">Detail</th>
+                        <th class="no-print whitespace-nowrap px-6 py-4 text-center">Detail</th>
                     </tr>
+
                 </thead>
+
 
                 <tbody class="divide-y divide-slate-100">
 
                     @forelse ($evaluations as $evaluation)
 
                         @php
+
                             $score = (float) $evaluation->total_score;
 
                             if ($score >= 90) {
@@ -235,7 +304,9 @@
                                 $grade = 'Perlu Evaluasi';
                                 $badge = 'bg-red-50 text-red-700';
                             }
+
                         @endphp
+
 
                         <tr class="transition hover:bg-slate-50">
 
@@ -243,7 +314,9 @@
                                 {{ $evaluations->firstItem() + $loop->index }}
                             </td>
 
+
                             <td class="whitespace-nowrap px-6 py-4">
+
                                 <p class="font-semibold text-slate-800">
                                     {{ $evaluation->employee->name ?? 'Karyawan tidak ditemukan' }}
                                 </p>
@@ -251,11 +324,14 @@
                                 <p class="mt-1 text-xs text-slate-400">
                                     {{ $evaluation->employee->employee_code ?? '-' }}
                                 </p>
+
                             </td>
+
 
                             <td class="whitespace-nowrap px-6 py-4 text-slate-600">
                                 {{ \Carbon\Carbon::parse($evaluation->period_start)->translatedFormat('M Y') }}
                             </td>
+
 
                             <td class="whitespace-nowrap px-6 py-4">
                                 <span class="font-bold text-slate-800">
@@ -263,19 +339,27 @@
                                 </span>
                             </td>
 
+
                             <td class="whitespace-nowrap px-6 py-4">
+
                                 <span class="rounded-lg px-3 py-1.5 text-xs font-bold {{ $badge }}">
                                     {{ $grade }}
                                 </span>
+
                             </td>
 
+
                             <td class="whitespace-nowrap px-6 py-4 text-slate-500">
+
                                 {{ $evaluation->evaluation_date
                                     ? \Carbon\Carbon::parse($evaluation->evaluation_date)->translatedFormat('d M Y')
                                     : '-' }}
+
                             </td>
 
-                            <td class="whitespace-nowrap px-6 py-4 text-center">
+
+                            <td class="no-print whitespace-nowrap px-6 py-4 text-center">
+
                                 <button
                                     type="button"
                                     onclick="document.getElementById('detail-{{ $evaluation->id }}').classList.toggle('hidden')"
@@ -285,9 +369,11 @@
                                     <i class="fa-solid fa-eye"></i>
 
                                 </button>
+
                             </td>
 
                         </tr>
+
 
                         <!-- DETAIL NILAI -->
                         <tr id="detail-{{ $evaluation->id }}" class="hidden bg-slate-50">
@@ -321,7 +407,9 @@
 
                                     </div>
 
-                                    <div class="mt-4 border-t border-slate-100 pt-4 flex justify-between">
+
+                                    <div class="mt-4 flex justify-between border-t border-slate-100 pt-4">
+
                                         <span class="text-sm font-semibold text-slate-500">
                                             Nilai Akhir
                                         </span>
@@ -329,6 +417,7 @@
                                         <span class="font-bold text-blue-600">
                                             {{ number_format($score, 2) }} / 100
                                         </span>
+
                                     </div>
 
                                 </div>
@@ -337,9 +426,11 @@
 
                         </tr>
 
+
                     @empty
 
                         <tr>
+
                             <td colspan="7" class="px-6 py-14 text-center">
 
                                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
@@ -355,6 +446,7 @@
                                 </p>
 
                             </td>
+
                         </tr>
 
                     @endforelse
@@ -365,15 +457,175 @@
 
         </div>
 
+
         <!-- PAGINATION -->
         @if ($evaluations->hasPages())
-            <div class="border-t border-slate-100 px-6 py-4">
+
+            <div class="no-print border-t border-slate-100 px-6 py-4">
                 {{ $evaluations->links() }}
             </div>
+
         @endif
 
     </div>
 
+
+    <!-- FOOTER CETAK -->
+    <div class="hidden print-footer border-t border-slate-200 pt-5">
+
+        <div class="flex items-center justify-between text-xs text-slate-500">
+
+            <span>
+                KinerjaKu - Employee Management System
+            </span>
+
+            <span>
+                Dokumen Laporan Kinerja Karyawan
+            </span>
+
+        </div>
+
+    </div>
+
 </div>
+
+
+<!-- ==========================================
+     PRINT STYLE
+========================================== -->
+
+<style>
+
+    @media print {
+
+        @page {
+            size: A4 landscape;
+            margin: 12mm;
+        }
+
+        html,
+        body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-width: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* Sembunyikan seluruh layout aplikasi */
+        body * {
+            visibility: hidden !important;
+        }
+
+        /* Tampilkan hanya area laporan */
+        #print-area,
+        #print-area * {
+            visibility: visible !important;
+        }
+
+        #print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+        }
+
+        /* Hilangkan elemen interaktif */
+        .no-print {
+            display: none !important;
+        }
+
+        /* Tampilkan informasi periode */
+        .print-period,
+        .print-footer {
+            display: block !important;
+        }
+
+        /* Hilangkan overflow agar tabel tidak terpotong */
+        #print-area .overflow-hidden,
+        #print-area .overflow-x-auto {
+            overflow: visible !important;
+        }
+
+        /* Hilangkan shadow dan radius berlebihan */
+        #print-area .shadow-sm {
+            box-shadow: none !important;
+        }
+
+        #print-area .rounded-2xl {
+            border-radius: 8px !important;
+        }
+
+        /* Tabel */
+        #print-area table {
+            width: 100% !important;
+            min-width: 0 !important;
+            border-collapse: collapse !important;
+            font-size: 10px !important;
+        }
+
+        #print-area th,
+        #print-area td {
+            padding: 9px 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            white-space: normal !important;
+        }
+
+        #print-area thead {
+            display: table-header-group;
+        }
+
+        #print-area tr {
+            page-break-inside: avoid !important;
+        }
+
+        /* Statistik */
+        #print-area .grid {
+            break-inside: avoid;
+        }
+
+        /* Jangan memotong kartu statistik */
+        #print-area .rounded-2xl {
+            break-inside: avoid;
+        }
+
+        /* Judul */
+        #print-area h1 {
+            font-size: 22px !important;
+            color: #0f172a !important;
+        }
+
+        #print-area h2 {
+            font-size: 23px !important;
+        }
+
+        /* Footer */
+        .print-footer {
+            margin-top: 25px !important;
+        }
+
+    }
+
+</style>
+
+
+<!-- ==========================================
+     JAVASCRIPT CETAK
+========================================== -->
+
+<script>
+
+function printReport() {
+
+    window.print();
+
+}
+
+</script>
 
 @endsection
